@@ -123,7 +123,7 @@ class RegisterViewController: UIViewController {
             usernameTextField.heightAnchor.constraint(equalToConstant:40)
         ])
         
-       
+        
         
         NSLayoutConstraint.activate([
             emailTextField.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor, constant: 15),
@@ -131,7 +131,7 @@ class RegisterViewController: UIViewController {
             emailTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -30),
             emailTextField.bottomAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: -15),
         ])
- 
+        
         
         NSLayoutConstraint.activate([
             passwordTextField.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
