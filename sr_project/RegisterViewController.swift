@@ -57,7 +57,7 @@ class RegisterViewController: UIViewController {
         let mySelectedAttributedTitle = NSAttributedString(string: "Buat Akun",
                                                            attributes: [NSAttributedString.Key.foregroundColor : UIColor.white, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 22)])
         btn.setAttributedTitle(mySelectedAttributedTitle, for: .normal)
-        btn.setRoundedBoxShadow(color: UIColor.systemYellow)
+        btn.setRoundedBoxShadow(color: UIColor.systemYellow, radius: 10, opacity: 0.2)
         return btn
     }()
     
@@ -81,6 +81,14 @@ class RegisterViewController: UIViewController {
         setupView()
         setupBackgroundColor()
         setTextFieldDelegate()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear(notification:)), name: .UIResponder.keyboardWillShowNotification, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self, name: .UIResponder.keyboardWillShowNotification , object: nil)
     }
     
     func setTextFieldDelegate(){
@@ -165,13 +173,35 @@ class RegisterViewController: UIViewController {
         contentView.endEditing(true)
     }
     
-    
+    @objc
+    func keyboardWillAppear(notification: NSNotification?) {
+
+        guard let keyboardFrame = notification?.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
+            return
+        }
+
+        let keyboardHeight: CGFloat
+        if #available(iOS 11.0, *) {
+            keyboardHeight = keyboardFrame.cgRectValue.height - self.view.safeAreaInsets.bottom
+        } else {
+            keyboardHeight = keyboardFrame.cgRectValue.height
+        }
+
+    }
+
     
 }
 
 
 extension RegisterViewController : UITextFieldDelegate {
     
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        if(textField == self.usernameTextField){
+            scrollView.scrollToTop()
+        }
+        return true
+    }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         
@@ -210,11 +240,19 @@ extension UITextField {
 
 
 extension UIButton {
-    func setRoundedBoxShadow(color backgroundColor: UIColor){
-        self.layer.cornerRadius = 10
+    func setRoundedBoxShadow(color backgroundColor: UIColor, radius borderRadius: CGFloat, opacity shadowOpacity: Float){
+        self.layer.cornerRadius = borderRadius
         self.clipsToBounds = false
-        self.layer.shadowOpacity = 0.2
+        self.layer.shadowOpacity = shadowOpacity
         self.backgroundColor = backgroundColor
         self.layer.shadowOffset = CGSize(width: -1, height: 4)
     }
+}
+
+
+extension UIScrollView {
+    func scrollToTop() {
+        let desiredOffset = CGPoint(x: 0, y: -contentInset.top + keyboardFrame.cgRectValue.height)
+        setContentOffset(desiredOffset, animated: true)
+   }
 }
