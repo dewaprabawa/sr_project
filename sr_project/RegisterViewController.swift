@@ -12,14 +12,12 @@ class RegisterViewController: UIViewController {
     lazy private var usernameTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Username"
-        textField.attributedPlaceholder = NSAttributedString(string: "Username", attributes: [NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 20)])
+        textField.attributedPlaceholder = NSAttributedString(string: "Username", attributes: [NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 18)])
         textField.keyboardType = UIKeyboardType.default
-        textField.returnKeyType = UIReturnKeyType.next
         textField.autocorrectionType = UITextAutocorrectionType.no
-        textField.borderStyle = UITextField.BorderStyle.roundedRect
         textField.clearButtonMode = UITextField.ViewMode.whileEditing;
         textField.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
+        textField.setRoundedBoxShadow()
         return textField;
     }()
     
@@ -27,14 +25,13 @@ class RegisterViewController: UIViewController {
         var textField = UITextField();
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.attributedPlaceholder = NSAttributedString(
-            string: "Email", attributes: [ NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20)]
+            string: "Email", attributes: [ NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
         )
         textField.keyboardType = UIKeyboardType.default
-        textField.returnKeyType = UIReturnKeyType.go
         textField.autocorrectionType = UITextAutocorrectionType.no
-        textField.borderStyle = UITextField.BorderStyle.roundedRect
         textField.clearButtonMode = UITextField.ViewMode.whileEditing;
         textField.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
+        textField.setRoundedBoxShadow()
         return textField
     }()
     
@@ -42,28 +39,25 @@ class RegisterViewController: UIViewController {
     lazy private var passwordTextField: UITextField = {
         var textField = UITextField();
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Password"
         textField.attributedPlaceholder = NSAttributedString(
-            string: "Password", attributes: [ NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20)]
+            string: "Password", attributes: [ NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
         )
         textField.keyboardType = UIKeyboardType.default
-        textField.returnKeyType = UIReturnKeyType.go
         textField.autocorrectionType = UITextAutocorrectionType.no
-        textField.borderStyle = UITextField.BorderStyle.roundedRect
         textField.clearButtonMode = UITextField.ViewMode.whileEditing;
         textField.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
+        textField.setRoundedBoxShadow()
         return textField
     }()
     
     lazy private var registerButton: UIButton = {
         var btn = UIButton(type: .custom)
         btn.translatesAutoresizingMaskIntoConstraints = false
-        btn.layer.backgroundColor = UIColor.systemYellow.cgColor
-        btn.layer.cornerRadius = 8
-        btn.setTitle("Buat Akun", for: .normal)
         btn.setTitleColor(.white, for: .normal)
-        let mySelectedAttributedTitle = NSAttributedString(string: "Click Here",
-                                                           attributes: [NSAttributedString.Key.foregroundColor : UIColor.green])
+        let mySelectedAttributedTitle = NSAttributedString(string: "Buat Akun",
+                                                           attributes: [NSAttributedString.Key.foregroundColor : UIColor.white, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 22)])
+        btn.setAttributedTitle(mySelectedAttributedTitle, for: .normal)
+        btn.setRoundedBoxShadow(color: UIColor.systemYellow)
         return btn
     }()
     
@@ -85,6 +79,18 @@ class RegisterViewController: UIViewController {
         super.viewDidLoad()
         setupScrollView()
         setupView()
+        setupBackgroundColor()
+        setTextFieldDelegate()
+    }
+    
+    func setTextFieldDelegate(){
+        usernameTextField.delegate = self
+        emailTextField.delegate = self
+        passwordTextField.delegate = self
+    }
+    
+    func setupBackgroundColor(){
+        view.backgroundColor = UIColor.systemGray6
     }
     
     
@@ -114,22 +120,26 @@ class RegisterViewController: UIViewController {
         contentView.addSubview(emailTextField)
         contentView.addSubview(passwordTextField)
         contentView.addSubview(registerButton)
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        
+        view.addGestureRecognizer(tap)
         
         NSLayoutConstraint.activate([
             usernameTextField.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             usernameTextField.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             usernameTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
             usernameTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -30),
-            usernameTextField.heightAnchor.constraint(equalToConstant:40)
-        ])
+            usernameTextField.heightAnchor.constraint(equalToConstant:40),
+                ])
         
         
         
         NSLayoutConstraint.activate([
-            emailTextField.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor, constant: 15),
+            emailTextField.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor, constant: 20),
             emailTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
             emailTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -30),
-            emailTextField.bottomAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: -15),
+            emailTextField.bottomAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: -20),
+            emailTextField.heightAnchor.constraint(equalToConstant:40)
         ])
         
         
@@ -137,7 +147,7 @@ class RegisterViewController: UIViewController {
             passwordTextField.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             passwordTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
             passwordTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -30),
-            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 15),
+            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: -20),
             passwordTextField.heightAnchor.constraint(equalToConstant:40)
         ])
         
@@ -145,8 +155,14 @@ class RegisterViewController: UIViewController {
             registerButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 30),
             registerButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
             registerButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -30),
-            registerButton.heightAnchor.constraint(equalToConstant: 50)
+            registerButton.heightAnchor.constraint(equalToConstant: 45)
         ])
+    }
+    
+    
+    
+    @objc func dismissKeyboard(){
+        contentView.endEditing(true)
     }
     
     
@@ -162,7 +178,43 @@ extension RegisterViewController : UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.switchBasedNextTextField(textField)
         return true
     }
     
+    private func switchBasedNextTextField(_ textField: UITextField) {
+        switch textField {
+        case self.usernameTextField:
+            self.emailTextField.becomeFirstResponder()
+        case self.emailTextField:
+            self.passwordTextField.becomeFirstResponder()
+        default:
+            self.passwordTextField.resignFirstResponder()
+        }
+    }
+    
+}
+
+extension UITextField {
+    func setRoundedBoxShadow(){
+        self.layer.cornerRadius = 10
+        self.clipsToBounds = false
+        self.layer.shadowOpacity = 0.2
+        let leftPadding = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: self.frame.height))
+        self.leftView = leftPadding
+        self.leftViewMode = .always
+        self.backgroundColor = UIColor.white
+        self.layer.shadowOffset = CGSize(width: -1, height: 4)
+    }
+}
+
+
+extension UIButton {
+    func setRoundedBoxShadow(color backgroundColor: UIColor){
+        self.layer.cornerRadius = 10
+        self.clipsToBounds = false
+        self.layer.shadowOpacity = 0.2
+        self.backgroundColor = backgroundColor
+        self.layer.shadowOffset = CGSize(width: -1, height: 4)
+    }
 }
